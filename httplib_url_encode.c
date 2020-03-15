@@ -25,9 +25,22 @@
  * Release: 2.0
  */
 
-//#include "httplib_main.h"
 #include <stdio.h>
 #include <string.h>
+#include <ctype.h>
+
+/* FUNCTION PROTOTYPE */
+int httplib_url_encode( const char *src, char *dst, size_t dst_len );
+
+ void URL_ENCODE(
+      char *src,
+      char *dst,
+      short *innull,
+      short *outnull,
+      char *sqlstate,
+      char *funcname,
+      char *specname,
+      char * msgtext );
 
 
 int httplib_url_encode( const char *src, char *dst, size_t dst_len ) {
@@ -45,7 +58,8 @@ int httplib_url_encode( const char *src, char *dst, size_t dst_len ) {
 
 	while ( *src != '\0'  &&  pos < end ) {
 
-		if ( isalnum(*(const unsigned char *)src)  ||  strchr( dont_escape, *(const unsigned char *)src ) != NULL ) *pos = *src;
+		if ( isalnum(*(const unsigned char *)src)  || 
+                     strchr( dont_escape, *(const unsigned char *)src ) != NULL ) *pos = *src;
 		
 		else if ( pos + 2 < end ) {
 
@@ -65,3 +79,29 @@ int httplib_url_encode( const char *src, char *dst, size_t dst_len ) {
 	return (*src == '\0') ? (int)(pos - dst) : -1;
 
 }  /* httplib_url_encode */
+
+/* UDF function */
+
+void URL_ENCODE(
+	char  *src,
+	char  *dst,
+	short *innull,
+	short *outnull,
+	char  *sqlstate,
+	char  *funcname,
+	char  *specname,
+	char  * msgtext ){
+
+	size_t outsiz = 3096;
+	int len = 0;
+
+	if (*innull < 0) {
+		*outnull = -1;
+	} else {
+		*outnull = 0;
+		len =  httplib_url_encode( src, dst, outsiz );
+	}
+
+	return;
+} /* URL_ENCODE */
+
