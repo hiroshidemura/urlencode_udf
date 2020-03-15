@@ -59,7 +59,7 @@ int httplib_url_encode( const char *src, char *dst, size_t dst_len ) {
 	while ( *src != '\0'  &&  pos < end ) {
 
 		if ( isalnum(*(const unsigned char *)src)  || 
-                     strchr( dont_escape, *(const unsigned char *)src ) != NULL ) *pos = *src;
+			strchr( dont_escape, *(const unsigned char *)src ) != NULL ) *pos = *src;
 		
 		else if ( pos + 2 < end ) {
 

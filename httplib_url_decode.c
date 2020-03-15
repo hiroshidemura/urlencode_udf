@@ -28,11 +28,13 @@
 //#include "httplib_main.h"
 #include <stdio.h>
 #include <string.h>
+#include <ctype.h>
 
 
 #define HEXTOI(x) (isdigit(x) ? (x - '0') : (x - 'W'))
 
-int httplib_url_decode( const char *src, int src_len, char *dst, int dst_len, int is_form_url_encoded ) {
+int httplib_url_decode( const char *src, int src_len, 
+                        char *dst, int dst_len, int is_form_url_encoded ) {
 
 	int i;
 	int j;
@@ -44,7 +46,9 @@ int httplib_url_decode( const char *src, int src_len, char *dst, int dst_len, in
 
 	while ( i < src_len  &&  j < dst_len-1 ) {
 
-		if ( i < src_len - 2  &&  src[i] == '%'  &&  isxdigit(*(const unsigned char *)(src + i + 1))  &&  isxdigit(*(const unsigned char *)(src + i + 2)) ) {
+		if ( i < src_len - 2  &&  src[i] == '%'  &&
+		  isxdigit(*(const unsigned char *)(src + i + 1))  &&
+		  isxdigit(*(const unsigned char *)(src + i + 2)) ) {
 
 			a      = tolower(*(const unsigned char *)(src + i + 1));
 			b      = tolower(*(const unsigned char *)(src + i + 2));
@@ -64,3 +68,32 @@ int httplib_url_decode( const char *src, int src_len, char *dst, int dst_len, in
 	return (i >= src_len) ? j : -1;
 
 }  /* httplib_url_decode */
+
+
+/* UDF function */
+
+void URL_DECODE(
+	char  *src,
+	char  *dst,
+	short *innull,
+	short *outnull,
+	char  *sqlstate,
+	char  *funcname,
+	char  *specname,
+	char  * msgtext ){
+
+	int dstsiz = 1025;
+	int srcsiz = 1024;
+	int len = 0;
+
+	if (*innull < 0) {
+		*outnull = -1;
+	} else {
+		*outnull = 0;
+		len =  httplib_url_decode( src, srcsiz,dst, dstsiz, 1 );
+	}
+
+	return;
+} /* URL_DECODE */
+
+
