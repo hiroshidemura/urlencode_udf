@@ -25,13 +25,27 @@
  * Release: 2.0
  */
 
-//#include "httplib_main.h"
 #include <stdio.h>
 #include <string.h>
 #include <ctype.h>
 
 
 #define HEXTOI(x) (isdigit(x) ? (x - '0') : (x - 'W'))
+
+/* FUNCTION PROTOTYPE */
+int httplib_url_decode( const char *src, int src_len, 
+                        char *dst, int dst_len, int is_form_url_encoded );
+
+void URL_DECODE(
+	char  *src,
+	char  *dst,
+	short *innull,
+	short *outnull,
+	char  *sqlstate,
+	char  *funcname,
+	char  *specname,
+	char  * msgtext );
+
 
 int httplib_url_decode( const char *src, int src_len, 
                         char *dst, int dst_len, int is_form_url_encoded ) {
@@ -73,8 +87,8 @@ int httplib_url_decode( const char *src, int src_len,
 /* UDF function */
 
 void URL_DECODE(
-	char  *src,
-	char  *dst,
+	char  *src,            /* input VARCHAR(1024)  */
+	char  *dst,            /* output VARCHAR(1025) */
 	short *innull,
 	short *outnull,
 	char  *sqlstate,

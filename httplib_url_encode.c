@@ -83,8 +83,8 @@ int httplib_url_encode( const char *src, char *dst, size_t dst_len ) {
 /* UDF function */
 
 void URL_ENCODE(
-	char  *src,
-	char  *dst,
+	char  *src,          /* input  VARCHAR(1024) */
+	char  *dst,          /* output VARCHAR(3096) */
 	short *innull,
 	short *outnull,
 	char  *sqlstate,
