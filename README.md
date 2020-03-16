@@ -1,19 +1,23 @@
 # urlencode_udf
-urlencode/decode udf for DB2 for i
+urlencode/urldecode udf for DB2 for i
 
 DB2 for i のUDFとして使えるURL_ENCODE, URL_DECODE
 
-encede/decodeの処理はLibHTTPのhttplib_url_encode, httplib_url_decodeをベースとしています。
-
-LibHTTP https://github.com/lammertb/libhttp
-
+encede/decodeの処理は[LibHTTP](https://github.com/lammertb/libhttp)のhttplib_url_encode, httplib_url_decodeをベースとしています。
 
 ## コンパイル時の注意点
 文字コードをutf-8として扱うため、LOCALETYPE(*LOCALEUTF)を指定します
+```
+CRTCMOD  MODULE(@DEMLIB/URL_ENC) 
+ SRCSTMF('httplib_url_encode.c') LOCALETYPE(*LOCALEUTF) TGTCCSID(1399) 
+ DBGVIEW(*SOURCE)
+```
 
 ## UDFの作成
+パラメータ文字列のCCSIDを1208(utf-8)とすること。
 
-CREATE FUNCTION @DEMLIB/URL_ENCODE ( 
+```SQL
+CREATE FUNCTION @DEMLIB.URL_ENCODE ( 
 	SRC VARCHAR(1024) CCSID 1208 DEFAULT  NULL  ) 
 	RETURNS VARCHAR(3096) CCSID 1208   
 	LANGUAGE C 
@@ -24,7 +28,7 @@ CREATE FUNCTION @DEMLIB/URL_ENCODE (
 	EXTERNAL NAME '@DEMLIB/URLENC(URL_ENCODE)' 
 	PARAMETER STYLE SQL ; 
 
-CREATE FUNCTION @DEMLIB/URL_DECODE ( 
+CREATE FUNCTION @DEMLIB.URL_DECODE ( 
 	SRC VARCHAR(1024) CCSID 1208 DEFAULT  NULL  ) 
 	RETURNS VARCHAR(1025) CCSID 1208   
 	LANGUAGE C 
@@ -34,5 +38,16 @@ CREATE FUNCTION @DEMLIB/URL_DECODE (
 	CALLED ON NULL INPUT 
 	EXTERNAL NAME '@DEMLIB/URLENC(URL_DECODE)' 
 	PARAMETER STYLE SQL ; 
+```
 
+## UDF使用例
+```SQL
+SELECT @DEMLIB.URL_ENCODE('Ab cあ')
+ FROM SYSIBM.SYSDUMMY1;
+-->'Ab%20c%e3%81%82'
+
+SELECT @DEMLIB.URL_DECODE('Ab%20c%e3%81%82')
+ FROM SYSIBM.SYSDUMMY1
+-->'Ab cあ'
+```
 
